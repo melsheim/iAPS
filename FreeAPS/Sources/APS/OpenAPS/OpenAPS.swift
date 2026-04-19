@@ -120,8 +120,8 @@ final class OpenAPS {
 
                     now = Date.now
                     // Auto ISF Layer
-                    if let freeAPSSettings = settings, freeAPSSettings.autoisf || self.autoISF(override: override),
-                       self.notDisabled(override: override)
+                    if let freeAPSSettings = settings, freeAPSSettings.autoisf,
+                       self.notDisabled(override: override) || self.autoISF(override: override)
                     {
                         now = Date.now
                         profile = await self.autosisf(
@@ -394,8 +394,8 @@ final class OpenAPS {
     private func notDisabled(override: Override?) -> Bool {
         guard let current = override, current.enabled else { return true }
         guard current.overrideAutoISF, let settings = OverrideStorage().fetchLatestAutoISFsettings().first,
-              settings.autoisf else { return true }
-        return true
+              !settings.autoisf else { return true }
+        return false
     }
 
     private func pumpHistory() async -> RawJSON {
